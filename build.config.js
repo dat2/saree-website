@@ -13,8 +13,8 @@ module.exports = {
         js: ['src/**/*.js', '!src/**/*.spec.js', '!src/assets/**/*.js'],
         jsunit: ['src/**/*.spec.js'],
 
-        atpl: ['src/app/**/*.tpl.html'],
-        ctpl: ['src/common/**/*.tpl.html'],
+        atpl: ['src/app/**/*.html'],
+        ctpl: ['src/common/**/*.html'],
 
         html: ['src/index.html'],
 
@@ -32,7 +32,9 @@ module.exports = {
     vendorFiles: {
         js: [
             'bower_components/angular/angular.js',
-            'bower_components/angular-resource/angular-resource.js'
+            'bower_components/angular-resource/angular-resource.js',
+            'bower_components/jquery/dist/jquery.js',
+            'bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js'
         ],
         css: [],
         assets: []
