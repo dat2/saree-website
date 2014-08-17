@@ -1,0 +1,8 @@
+/**
+ * <%= pkg.name %> - v<%= pkg.version %> - <%= today('YYYY-MM-DD') %>
+ * <%= pkg.homepage %>
+ *
+ * Copyright (c) <%= today('YYYY') %> <%= pkg.author %>
+ * Licensed <%= pkg.licenses.type %> <<%= pkg.licenses.url %>>
+ */
+(function ( window, angular, undefined ) {
