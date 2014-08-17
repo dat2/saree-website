@@ -8,7 +8,17 @@
  * Controller of the websiteApp
  */
 angular.module('websiteApp.sarees', [])
-  .controller('SareesCtrl', ['$scope', function ($scope) {
+
+  .config(function config($stateProvider){
+    $stateProvider
+      .state('home', {
+        url: '/',
+        templateUrl: 'src/app/views/sarees/sarees.html',
+        controller: 'SareesCtrl'
+      })
+  })
+
+  .controller('SareesCtrl', ['$scope', function SareesController($scope) {
     $scope.sarees = [{"id":1,"type":"designer","price":185.21,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":2,"type":"designer","price":91.33,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":3,"type":"cotton","price":88.91,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},

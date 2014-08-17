@@ -19,22 +19,21 @@ angular
 
     // app modules
     'websiteApp.sarees',
-  ])
-  .config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider){
-  	$urlRouterProvider.otherwise('/');
+    'websiteApp.saree',
+    'websiteApp.contact',
 
-  	$stateProvider
-  		.state('home', {
-  			url: '/',
-  			templateUrl: 'src/app/views/sarees/sarees.html',
-  			controller: 'SareesCtrl'
-  		})
-  		.state('saree', {
-  			url: '/saree',
-  			templateUrl: 'src/app/views/saree/saree.html'
-  		})
-  		.state('contact', {
-  			url: '/contact',
-  			templateUrl: 'src/app/views/contact/contact.html'
-  		})
-  }]);
+  ])
+  .config(function($urlRouterProvider, $stateProvider){
+  	$urlRouterProvider.otherwise('/');
+  });
+
+  	
+  // 		.state('saree', {
+  // 			url: '/saree',
+  // 			templateUrl: 'src/app/views/saree/saree.html'
+  // 		})
+  // 		.state('contact', {
+  // 			url: '/contact',
+  // 			templateUrl: 'src/app/views/contact/contact.html'
+  // 		})
+  // }]);

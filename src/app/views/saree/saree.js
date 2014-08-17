@@ -7,8 +7,18 @@
  * # MainCtrl
  * Controller of the websiteApp
  */
-angular.module('websiteApp.sarees', [])
-  .controller('SareeCtrl', function ($scope) {
+angular.module('websiteApp.saree', [])
+
+  .config(function config($stateProvider){
+    $stateProvider
+      .state('saree', {
+        url: '/saree',
+        templateUrl: 'src/app/views/saree/saree.html',
+        controller: 'SareeCtrl'
+      })
+  })
+
+  .controller('SareeCtrl', function SareeController($scope) {
     $scope.saree = 
     	{
     		"id":1,
