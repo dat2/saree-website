@@ -16,22 +16,11 @@
   </head>
   <body ng-app="websiteApp">
     <!-- Add your site or application content here -->
-    <div class="container">
-      <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a ng-href="#">Home</a></li>
-          <li><a ng-href="#">About</a></li>
-          <li><a ng-href="#">Contact</a></li>
-        </ul>
-        <h3 class="text-muted">website</h3>
-      </div>
+    <div ng-include="'src/app/components/header/nav.html'"></div>
 
-      <div ng-include="'src/app/main/main.tpl.html'" ng-controller="MainCtrl"></div>
+    <div ng-include="'src/app/main/main.html'" ng-controller="MainCtrl"></div>
 
-      <div class="footer">
-        <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
-      </div>
-    </div>
+    <div ng-include="'src/app/components/footer/footer.html'"></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
