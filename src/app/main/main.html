@@ -17,6 +17,6 @@
   <div class="col-md-4" ng-repeat="saree in sarees">
   	<img src={{saree.thumbnail}} class="img-rounded saree-thumbnail">
   	<h4> {{saree.type}} </h4>
-    <div> {{saree.price}} </div>
+    <div> {{saree.price | currency}} </div>
   </div>
 </div>

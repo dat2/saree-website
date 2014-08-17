@@ -13,8 +13,8 @@ module.exports = {
         js: ['src/**/*.js', '!src/**/*.spec.js', '!src/assets/**/*.js'],
         jsunit: ['src/**/*.spec.js'],
 
-        atpl: ['src/app/**/*.html'],
-        ctpl: ['src/common/**/*.html'],
+        atpl: ['src/app/**/*.html', '!src/app/components/**/*.html'],
+        ctpl: ['src/app/components/**/*.html'],
 
         html: ['src/index.html'],
 

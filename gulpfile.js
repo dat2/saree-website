@@ -98,11 +98,11 @@ gulp.task('partials-app', function() {
     makePartial(config.appFiles.atpl, 'app');
 });
 
-gulp.task('partials-common', function() {
-    makePartial(config.appFiles.ctpl, 'common');
+gulp.task('partials-components', function() {
+    makePartial(config.appFiles.ctpl, 'components');
 });
 
-gulp.task('partials', ['partials-app', 'partials-common']);
+gulp.task('partials', ['partials-app', 'partials-components']);
 
 /**
  * Lint tasks
@@ -135,7 +135,7 @@ var template = require('gulp-template'),
 var globArray = require('glob-array'),
     pkg = require('./package.json');
 
-var templateJs = ['templates-app.js', 'templates-common.js'];
+var templateJs = ['templates-app.js', 'templates-components.js'];
 
 gulp.task('process-index', function() {
     var vendorJs = production ? ['vendor-built.js'] : config.vendorFiles.js;
