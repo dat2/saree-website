@@ -2,28 +2,13 @@
 
 /**
  * @ngdoc function
- * @name websiteApp.controller:MainCtrl
+ * @name websiteApp.controller:SareesCtrl
  * @description
  * # MainCtrl
  * Controller of the websiteApp
  */
 angular.module('websiteApp.sarees', [])
   .controller('SareesCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      {
-      	title:'HTML5 Boilerplate',
-      	descr:'HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.'
-      },
-      {
-      	title: 'AngularJS',
-      	descr: 'AngularJS is a toolset for building the framework most suited to your application development.'
-  		},
-  		{
-  			title: 'Karma',
-  			descr: 'Spectacular Test Runner for JavaScript.'
-  		}
-    ];
-
     $scope.sarees = [{"id":1,"type":"designer","price":185.21,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":2,"type":"designer","price":91.33,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":3,"type":"cotton","price":88.91,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
