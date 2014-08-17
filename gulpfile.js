@@ -192,7 +192,7 @@ gulp.task('browser-sync', function() {
     });
 });
 
-gulp.task('serve', ['clean', 'sass', 'browser-sync', 'partials', 'process-index'], function() {
+gulp.task('serve', ['clean', 'copy-assets', 'sass', 'browser-sync', 'partials', 'process-index'], function() {
     //watch sass files
     gulp.watch('src/**/*.scss', ['sass', reload]);
 
@@ -207,6 +207,11 @@ gulp.task('serve', ['clean', 'sass', 'browser-sync', 'partials', 'process-index'
 
     //watch specs, and lint them
     gulp.watch(config.appFiles.jsunit, ['lint-unit']);
+});
+
+gulp.task('copy-assets', function() {
+    return gulp.src(['src/404.html', 'src/favicon.ico', 'src/robots.txt'])
+        .pipe(compileDirectory());
 });
 
 /**
