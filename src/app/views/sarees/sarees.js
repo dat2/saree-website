@@ -8,7 +8,7 @@
  * Controller of the websiteApp
  */
 angular.module('websiteApp.sarees', [])
-  .controller('SareesCtrl', function ($scope) {
+  .controller('SareesCtrl', ['$scope', function ($scope) {
     $scope.sarees = [{"id":1,"type":"designer","price":185.21,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":2,"type":"designer","price":91.33,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":3,"type":"cotton","price":88.91,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
@@ -24,4 +24,4 @@ angular.module('websiteApp.sarees', [])
 										{"id":13,"type":"silk","price":152.97,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":14,"type":"cotton","price":252.23,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 										{"id":15,"type":"silk","price":221.84,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"}]
-  });
+  }]);
