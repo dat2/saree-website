@@ -193,8 +193,6 @@ gulp.task('browser-sync', function() {
 });
 
 gulp.task('serve', ['clean', 'sass', 'browser-sync', 'partials', 'process-index'], function() {
-    gulp.start('test');
-
     //watch sass files
     gulp.watch('src/**/*.scss', ['sass', reload]);
 
