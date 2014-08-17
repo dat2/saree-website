@@ -18,5 +18,5 @@ angular
     'ui.router',
 
     // app modules
-    'websiteApp.main',
+    'websiteApp.sarees',
   ]);

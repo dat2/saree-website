@@ -150,7 +150,7 @@ gulp.task('process-index', function() {
       appJs: appJs,
       templateJs: templateJs,
 
-      css: 'main.css',
+      css: 'app.css',
       version: pkg.version
     }))
     .pipe(compileDirectory());

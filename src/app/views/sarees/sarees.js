@@ -7,8 +7,8 @@
  * # MainCtrl
  * Controller of the websiteApp
  */
-angular.module('websiteApp.main', [])
-  .controller('MainCtrl', function ($scope) {
+angular.module('websiteApp.sarees', [])
+  .controller('SareesCtrl', function ($scope) {
     $scope.awesomeThings = [
       {
       	title:'HTML5 Boilerplate',
