@@ -1,7 +1,7 @@
 <div class="jumbotron">
   <h1>Sarees</h1>
   <p class="lead">
-    <img class="jumbotron-logo" src="src/images/logo.png" alt="I'm Yeoman"><br>
+    <img class="jumbotron-logo" src="src/images/logo.png"><br>
     Silk &amp; Cotton
   </p>
 </div>
@@ -15,7 +15,7 @@
 
 <div class="row-fluid saree-grid">
   <div class="col-md-4" ng-repeat="saree in sarees">
-  	<img src={{saree.thumbnail}} class="img-rounded saree-thumbnail">
+  	<img ng-src="{{saree.thumbnail}}" class="img-rounded saree-thumbnail">
   	<h4> {{saree.type}} </h4>
     <div> {{saree.price | currency}} </div>
   </div>
