@@ -22,6 +22,10 @@ $icon-font-path: "../../bower_components/bootstrap-sass-official/assets/fonts/bo
     border-bottom: none;
 }
 
+.nav-logo{
+  height:30px;
+}
+
 /* Custom page footer */
 .footer {
   padding-top: 19px;
@@ -63,3 +67,5 @@ $icon-font-path: "../../bower_components/bootstrap-sass-official/assets/fonts/bo
 }
 
 @import 'views/sarees/sarees.scss';
+@import 'views/saree/saree.scss';
+@import 'views/contact/contact.scss';

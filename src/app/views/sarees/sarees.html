@@ -6,17 +6,12 @@
   </p>
 </div>
 
-<!--<div>
-	<div ng-repeat="item in awesomeThings">
-		<h4>{{item.title}}</h4>
-		<p>{{item.descr}}</p>
-	</div>
-</div>-->
-
-<div class="row-fluid saree-grid">
-  <div class="col-md-4" ng-repeat="saree in sarees">
-  	<img ng-src="{{saree.thumbnail}}" class="img-rounded saree-thumbnail">
-  	<h4> {{saree.type}} </h4>
-    <div> {{saree.price | currency}} </div>
+<div class="container">
+  <div class="row containers">
+    <div class="col-xs-6 col-md-3" ng-repeat="saree in sarees">
+      <a href="#/saree" class="thumbnail">
+        <img ng-src="{{saree.thumbnail}}" ng-alt="{{saree.type}}">
+      </a>
+    </div>
   </div>
 </div>

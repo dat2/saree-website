@@ -26,14 +26,3 @@ angular
   .config(function($urlRouterProvider, $stateProvider){
   	$urlRouterProvider.otherwise('/');
   });
-
-  	
-  // 		.state('saree', {
-  // 			url: '/saree',
-  // 			templateUrl: 'src/app/views/saree/saree.html'
-  // 		})
-  // 		.state('contact', {
-  // 			url: '/contact',
-  // 			templateUrl: 'src/app/views/contact/contact.html'
-  // 		})
-  // }]);
