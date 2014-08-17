@@ -10,7 +10,13 @@
  */
 angular
   .module('websiteApp', [
+    // angular built ins
     'ngResource',
     'ngTouch',
-    'ui.router'
+
+    // angular third party plugins
+    'ui.router',
+
+    // app modules
+    'websiteApp.main',
   ]);

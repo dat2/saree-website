@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the websiteApp
  */
-angular.module('websiteApp')
+angular.module('websiteApp.main', [])
   .controller('MainCtrl', function ($scope) {
     $scope.awesomeThings = [
       {
