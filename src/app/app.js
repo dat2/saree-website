@@ -11,4 +11,6 @@
 angular
   .module('websiteApp', [
     'ngResource',
+    'ngTouch',
+    'ui.router'
   ]);

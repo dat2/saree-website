@@ -11,7 +11,7 @@ module.exports = {
 
     appFiles: {
         js: ['src/**/*.js', '!src/**/*.spec.js', '!src/assets/**/*.js'],
-        jsunit: ['src/**/*.spec.js'],
+        jsunit: ['ssrc/**/*.spec.js'],
 
         atpl: ['src/app/**/*.html', '!src/app/components/**/*.html'],
         ctpl: ['src/app/components/**/*.html'],
@@ -33,6 +33,8 @@ module.exports = {
         js: [
             'bower_components/angular/angular.js',
             'bower_components/angular-resource/angular-resource.js',
+            'bower_components/angular-ui-router/release/angular-ui-router.js',
+            'bower_components/angular-touch/angular-touch.js',
             'bower_components/jquery/dist/jquery.js',
             'bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js'
         ],
