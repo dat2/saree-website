@@ -3,16 +3,15 @@ module.exports = {
   /**
    * This is the list of file patterns to load into the browser during testing.
    */
-  files: [ <% scripts.forEach(function(file) { %>
-        '<%= file %>', <%
-    }); %>
-    'src/**/*.js',
+  files: [<% scripts.forEach(function(file) { %>
+    '<%= file %>', <% }); %>
+    'src/app/**/*.js',
   ],
   exclude: [
     'src/assets/**/*.js'
   ],
-  frameworks: ['jasmine'],
-  plugins: ['karma-jasmine', 'karma-chrome-launcher', ],
+  frameworks: ['mocha'],
+  plugins: ['karma-mocha', 'karma-chai'],
 
   /**
    * How to report, by default.
