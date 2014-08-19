@@ -1,0 +1,25 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dat2/website"
+  },
+  "author": "Nicholas Dujay and Pirave Eahalaivan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dat2/website/issues"
+  },
+  "homepage": "https://github.com/dat2/website",
+  "devDependencies": {
+    "forever": "^0.11.1"
+  },
+  "engines": {
+    "node": ">=0.11.10"
+  }
+}
