@@ -2,12 +2,7 @@
  * Common gulp imports
  */
 var gulp = require('gulp'),
-  sourcemaps = require('gulp-sourcemaps'),
-  gulpif = require('gulp-if'),
-  uglify = require('gulp-uglify'),
-  concat = require('gulp-concat'),
-
-  ngAnnotate = require('gulp-ng-annotate');
+  g = require('gulp-load-plugins')();
 
 /**
  * npm modules
@@ -19,26 +14,29 @@ var lazypipe = require('lazypipe');
  */
 var config = require('./build.config.js'),
   production = false,
-  compileDirectory = lazypipe()
-  .pipe(function() {
-    return gulpif(production, gulp.dest(config.prodDir), gulp.dest(config.devDir));
-  });
+  compileDirectory = g.if(production, gulp.dest(config.prodDir), gulp.dest(config.devDir));
 
 /**
- * CSS preprocessing (LESS)
+ * CSS preprocessing (Sass)
  */
-var sass = require('gulp-sass'),
-  minifyCSS = require('gulp-minify-css');
 
 gulp.task('sass', function() {
   return gulp.src(config.appFiles.sass)
-    // .pipe(sourcemaps.init())
-    .pipe(sass({
+    //g. .pipe(sourcemaps.init())
+    .pipe(g.sass({
       sourceComments: 'map'
     }))
-    .pipe(gulpif(production, minifyCSS()))
-    // .pipe(sourcemaps.write('.'))
-    .pipe(compileDirectory());
+    // .pipe(g.sourcemaps.write('.'))
+    .pipe(gulp.dest(config.devDir));
+});
+
+gulp.task('sass:dist', function() {
+  return gulp.src(config.appFiles.sass)
+    .pipe(g.sass({
+      sourceComments: 'map'
+    }))
+    .pipe(g.minifyCSS())
+    .pipe(gulp.dest(config.prodDir));
 });
 
 /**
@@ -57,32 +55,32 @@ var ngHtml2Js = require('gulp-ng-html2js'),
   htmlmin = require('gulp-htmlmin');
 
 var annotateAndUglify = lazypipe()
-  .pipe(ngAnnotate)
-  .pipe(uglify);
+  .pipe(g.ngAnnotate)
+  .pipe(g.uglify);
 
 /**
  * Partial pipe factory
  * This will
  * a. minify your templates (passed in from gulp.src)
  * b. convert them to angular modules using html2js
- * c. concatenate
- * d. ngAnnotate
- * e. uglify
+ * c. g.concatenate
+ * d. g.ngAnnotate
+ * e. g.uglify
  * @return stream
  */
 function makePartialPipe(name) {
   return lazypipe()
     .pipe(function() {
-      return gulpif(production, htmlmin({
+      return g.if(production, htmlmin({
         collapseWhitespace: true
       }));
     })
     .pipe(ngHtml2Js, {
       moduleName: 'templates-' + name
     })
-    .pipe(concat, 'templates-' + name + '.js')
+    .pipe(g.concat, 'templates-' + name + '.js')
     .pipe(function() {
-      return gulpif(production, annotateAndUglify());
+      return g.if(production, annotateAndg.Uglify());
     })();
 
   //this is immediately called for api reasons
@@ -131,15 +129,16 @@ gulp.task('lint-unit', function() {
 /**
  * Template processing
  */
-var template = require('gulp-template'),
-  rename = require('gulp-rename');
+var inject = require('gulp-inject'),
+template = require('gulp-template'),
+rename = require('gulp-rename');
 
 var globArray = require('glob-array'),
   pkg = require('./package.json');
 
 var templateJs = ['templates-app.js', 'templates-components.js'];
 
-gulp.task('process-index', function() {
+gulp.task('index', function() {
   var vendorJs = production ? ['vendor-built.js'] : config.vendorFiles.js;
 
   var appJs = production ? ['app-built.js'] : globArray.sync(config.appFiles.js);
@@ -150,20 +149,28 @@ gulp.task('process-index', function() {
       appJs: appJs,
       templateJs: templateJs,
 
-      css: 'app.css',
       version: pkg.version
     }))
-    .pipe(compileDirectory());
+    .pipe(inject(
+      gulp.src(
+        [config.devDir + './*.css']
+        .g.concat(config.appFiles.js)
+      ), {
+        starttag: '<!-- inject:app:{{ext}} -->',
+        addRootSlash: false
+      }
+    ))
+    .pipe(gulp.dest(config.devDir));
 });
 
 gulp.task('process-karma', function() {
   var appJs = config.vendorFiles.js
-    .concat(
+    .g.concat(
       templateJs.map(function(filename) {
         return config.devDir + '/' + filename;
       })
     )
-    .concat(config.testFiles.js);
+    .g.concat(config.testFiles.js);
 
   return gulp.src('karma/karma-unit.tpl.js')
     .pipe(template({
@@ -225,14 +232,14 @@ var header = require('gulp-header'),
 var moment = require('moment'),
   fs = require('fs');
 
-//concatenate, ngAnnotate, uglify, header, footer, source maps
+//g.concatenate, g.ngAnnotate, g.uglify, header, footer, source maps
 gulp.task('build-app-js', ['lint'], function() {
   var date = moment();
   return gulp.src(config.appFiles.js)
-    .pipe(sourcemaps.init())
-    .pipe(concat('app-built.js'))
-    .pipe(ngAnnotate())
-    .pipe(uglify())
+    .pipe(g.sourcemaps.init())
+    .pipe(g.concat('app-built.js'))
+    .pipe(g.ngAnnotate())
+    .pipe(g.uglify())
     .pipe(header(fs.readFileSync('module.prefix'), {
       pkg: pkg,
       today: function today(string) {
@@ -240,15 +247,15 @@ gulp.task('build-app-js', ['lint'], function() {
       }
     }))
     .pipe(footer(fs.readFileSync('module.suffix')))
-    .pipe(sourcemaps.write())
+    .pipe(g.sourcemaps.write())
     .pipe(gulp.dest(config.prodDir));
 });
 
-//concatenate, uglify
+//g.concatenate, g.uglify
 gulp.task('build-vendor-js', function() {
   return gulp.src(config.vendorFiles.js)
-    .pipe(concat('vendor-built.js'))
-    .pipe(uglify())
+    .pipe(g.concat('vendor-built.js'))
+    .pipe(g.uglify())
     .pipe(gulp.dest(config.prodDir));
 });
 

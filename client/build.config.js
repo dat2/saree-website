@@ -18,7 +18,7 @@ module.exports = {
 
     html: ['src/index.html'],
 
-    sass: 'src/app/app.scss'
+    sass: 'src/app/**.scss'
   },
 
   testFiles: {
