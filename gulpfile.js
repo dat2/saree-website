@@ -117,15 +117,6 @@ gulp.task('lint-unit', function() {
  */
 var mainBowerFiles = require('main-bower-files');
 
-var getBowerFiles = function() {
-  return mainBowerFiles({
-    paths: {
-      bowerDirectory: 'client/bower_components',
-      bowerJson: 'client/bower.json'
-    }
-  });
-};
-
 var pkg = require('./package.json');
 
 var templateJs = ['templates-app.js', 'templates-components.js']
@@ -156,7 +147,7 @@ gulp.task('index', ['sass', 'partials'], function() {
       }
     ))
     .pipe(g.inject(
-      gulp.src(getBowerFiles(), {
+      gulp.src(mainBowerFiles(), {
         read: false
       }), {
         starttag: '<!-- bower:{{ext}} -->',
@@ -266,7 +257,7 @@ gulp.task('build', ['clean', 'build:js', 'build:css', 'partials:dist', 'index:di
 var karma = require('karma').server;
 
 gulp.task('karma', function() {
-  var js = getBowerFiles()
+  var js = mainBowerFiles()
     .concat(templateJs)
     .concat(config.testFiles.js);
 
