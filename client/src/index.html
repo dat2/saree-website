@@ -8,11 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <!-- compiled CSS -->
-    <link rel="stylesheet" href="<%= css %>">
+    <!-- bower:css -->
+    <!-- endinject -->
 
-    <!-- vendor files --><% vendorJs.forEach(function(file) { %>
-    <script src="<%= file %>"></script><% }); %>
+    <!-- app:css -->
+    <!-- endinject -->
+
+    <!-- bower:js -->
+    <!-- endinject -->
   </head>
   <body ng-app="websiteApp">
     <!-- Add your site or application content here -->
@@ -33,10 +36,10 @@
        ga('send', 'pageview');
     </script>
 
-    <!-- templates --><% if(templateJs !== null) { templateJs.forEach(function(file) { %>
-    <script src="<%= file %>"></script><% }); } %>
+    <!-- templates -->
+    <!-- endinject -->
 
-    <!-- app files --><% appJs.forEach(function(file) { %>
-    <script src="<%= file %>"></script><% }); %>
+    <!-- app:js -->
+    <!-- endinject -->
 </body>
 </html>
