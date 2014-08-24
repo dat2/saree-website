@@ -14,6 +14,10 @@ angular
     'ngResource',
     'ngTouch',
 
+    // templates
+    'templates-app',
+    'templates-components',
+
     // angular third party plugins
     'ui.router',
 
