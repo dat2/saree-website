@@ -61,7 +61,7 @@
   },
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install",
-    "start": "./node_modules/nodemon/bin/nodemon.js server/index.js"
+    "start": "NODE_ENV=\"production\" ./node_modules/nodemon/bin/nodemon.js server/index.js"
   },
   "engines": {
     "node": ">=0.10.31"
