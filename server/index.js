@@ -1,31 +1,20 @@
-var koa = require('koa'),
-  serve = require('koa-static'),
-  logger = require('koa-logger');
+var express = require('express'),
+  morgan = require('morgan');
 
-var fs = require('fs');
+var app = express();
 
-var app = koa();
-
-app.use(logger());
-
-if (app.env === 'development') {
-  //DEVELOPMENT SERVER
-  app.use(serve(require('../build.config.js').devDir));
-  app.use(serve('client'));
-  app.use(require('koa-browser-sync')());
+if(app.settings.env === 'development') {
+  // app.use(morgan('combined'));
+  app.use(express.static(require('../build.config.js').devDir));
+  app.use(express.static('client'));
 } else {
-  //PRODUCTION SERVER
-  // app.use(serve(require('../build.config.js').devDir));
-  // app.use(serve('client'));
-
-  app.use(serve('dist'));
+  app.use(express.static('dist'));
 }
 
 // the /sarees route
-app.use(function * (next) {
-  if (this.path !== '/sarees') return yield next;
+app.get('/sarees', function(req, res) {
 
-  this.body = [{"id":1,"type":"designer","price":180,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
+  res.json([{"id":1,"type":"designer","price":180,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 {"id":2,"type":"designer","price":90,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 {"id":3,"type":"cotton","price":80,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 {"id":4,"type":"cotton","price":180,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
@@ -40,11 +29,10 @@ app.use(function * (next) {
 {"id":13,"type":"silk","price":150,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 {"id":14,"type":"cotton","price":250,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"},
 {"id":15,"type":"silk","price":220,"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"}]
-;
-})
+);
+});
 
-app.listen(3000);
-
+app.listen(process.env.port || 3000);
 
 /*var Pgb = require('pg-bluebird');
 

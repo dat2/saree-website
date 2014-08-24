@@ -167,9 +167,6 @@ function createNodemon(production, cb) {
   var called = false;
   g.nodemon({
     script: 'server/index.js',
-    execMap: {
-      'js': 'node --harmony'
-    },
     env: {
       'NODE_ENV': production ? 'production' : 'development'
     }
