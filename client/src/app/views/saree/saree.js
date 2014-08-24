@@ -13,17 +13,17 @@ angular.module('websiteApp.saree', [])
     $stateProvider
       .state('saree', {
         url: '/saree',
-        templateUrl: 'src/app/views/saree/saree.html',
+        templateUrl: 'views/saree/saree.html',
         controller: 'SareeCtrl'
-      })
+      });
   })
 
   .controller('SareeCtrl', function SareeController($scope) {
-    $scope.saree = 
+    $scope.saree =
     	{
-    		"id":1,
-    		"type":"designer",
-    		"price":185.21,
-    		"thumbnail":"http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png"
-    	}						
+    		'id':1,
+    		'type':'designer',
+    		'price':185.21,
+    		'thumbnail':'http://www.drinkasinu.com/wp-content/uploads/2014/02/Product-Image-Coming-Soon.png'
+    	};
   });

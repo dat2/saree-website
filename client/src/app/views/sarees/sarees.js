@@ -13,19 +13,19 @@ angular.module('websiteApp.sarees', [])
     $stateProvider
       .state('home', {
         url: '/',
-        templateUrl: 'src/app/views/sarees/sarees.html',
+        templateUrl: 'views/sarees/sarees.html',
         controller: 'SareesCtrl',
         resolve: {
         	sarees: function($http){
         		return $http.get('/sarees')
               .then(function(response){
         			return response.data;
-        		})
+        		});
         	}
         }
-      })
+      });
   })
 
   .controller('SareesCtrl', function SareesController($scope, sarees) {
-    $scope.sarees = sarees
+    $scope.sarees = sarees;
 	});

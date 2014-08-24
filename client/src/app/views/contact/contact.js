@@ -13,11 +13,11 @@ angular.module('websiteApp.contact', [])
     $stateProvider
       .state('contact', {
         url: '/contact',
-        templateUrl: 'src/app/views/contact/contact.html',
+        templateUrl: 'views/contact/contact.html',
         controller: 'ContactCtrl'
-      })
+      });
   })
 
   .controller('CareeCtrl', function ContactController($scope) {
-              
+
   });
