@@ -117,6 +117,15 @@ gulp.task('lint-unit', function() {
  */
 var mainBowerFiles = require('main-bower-files');
 
+var getBowerFiles = function() {
+  return mainBowerFiles({
+    paths: {
+      bowerDirectory: 'client/bower_components',
+      bowerJson: 'client/bower.json'
+    }
+  });
+};
+
 var pkg = require('./package.json');
 
 var templateJs = ['templates-app.js', 'templates-components.js']
@@ -134,7 +143,7 @@ gulp.task('index', ['sass', 'partials'], function() {
         }), {
         starttag: '<!-- app:{{ext}} -->',
         addRootSlash: false,
-        ignorePath: config.devDir
+        ignorePath: [config.devDir, 'client']
       }
     ))
     .pipe(g.inject(
@@ -143,42 +152,22 @@ gulp.task('index', ['sass', 'partials'], function() {
       }), {
         starttag: '<!-- templates -->',
         addRootSlash: false,
-        ignorePath: config.devDir
+        ignorePath: [config.devDir, 'client']
       }
     ))
     .pipe(g.inject(
-      gulp.src(mainBowerFiles(), {
+      gulp.src(getBowerFiles(), {
         read: false
       }), {
         starttag: '<!-- bower:{{ext}} -->',
-        addRootSlash: false
+        addRootSlash: false,
+        ignorePath: ['client']
       }))
     .pipe(gulp.dest(config.devDir));
 });
 
 gulp.task('index:dist', function() {
 
-});
-
-gulp.task('karma', function() {
-  var js = mainBowerFiles()
-    .concat(templateJs)
-    .concat(config.testFiles.js);
-
-  return gulp.src('karma/karma-unit.tpl.js')
-    .pipe(g.inject(
-      gulp.src(js, {
-        read: false
-      }), {
-        addRootSlash: false,
-        starttag: '// inject:{{ext}}',
-        endtag: '// endinject',
-        transform: function(filepath) {
-          return '\'' + filepath + '\',';
-        }
-      }))
-    .pipe(g.rename('karma-unit.js'))
-    .pipe(gulp.dest(config.devDir));
 });
 
 /**
@@ -192,7 +181,7 @@ gulp.task('browser-sync', function() {
   browserSync({
     server: {
       //ORDER MATTERS
-      baseDir: [config.devDir, '.']
+      baseDir: [config.devDir, 'client']
     },
 
     online: false,
@@ -269,12 +258,34 @@ gulp.task('build:js', ['lint'], function() {
 //can't specify less as a dependency since it would get run before setting production to false
 gulp.task('build:css', ['sass:dist']);
 
-gulp.task('build', ['clean', 'build:js', 'build:css', 'partials:dist', 'index', 'copy:dist']);
+gulp.task('build', ['clean', 'build:js', 'build:css', 'partials:dist', 'index:dist', 'copy:dist']);
 
 /**
  * Test tasks
  */
 var karma = require('karma').server;
+
+gulp.task('karma', function() {
+  var js = getBowerFiles()
+    .concat(templateJs)
+    .concat(config.testFiles.js);
+
+  return gulp.src('client/karma/karma-unit.tpl.js')
+    .pipe(g.inject(
+      gulp.src(js, {
+        read: false
+      }), {
+        addRootSlash: false,
+        starttag: '// inject:{{ext}}',
+        endtag: '// endinject',
+        transform: function(filepath) {
+          return '\'' + filepath + '\',';
+        },
+        ignorePath: config.devDir
+      }))
+    .pipe(g.rename('karma-unit.js'))
+    .pipe(gulp.dest(config.devDir));
+});
 
 gulp.task('test', ['karma'], function(done) {
   var conf = require('./' + config.devDir + '/karma-unit.js');
