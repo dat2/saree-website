@@ -36,7 +36,7 @@ gulp.task('sass:dist', function() {
     .pipe(g.sass({
       sourceComments: 'map'
     }))
-    .pipe(g.minifyCss())
+    .pipe(g.minifyCss()) //ugh removes the source map
     .pipe(g.concat('app-built.css'))
     .pipe(gulp.dest(config.prodDir));
 });
@@ -82,11 +82,11 @@ gulp.task('partials-components', function() {
 gulp.task('partials', ['partials-app', 'partials-components']);
 
 gulp.task('partials-app:dist', function() {
-  makePartial(config.appFiles.atpl, 'app', 'views', true);
+  makePartial(config.appFiles.atpl, 'app', 'views/', true);
 });
 
 gulp.task('partials-components:dist', function() {
-  makePartial(config.appFiles.atpl, 'components', 'components/', true);
+  makePartial(config.appFiles.ctpl, 'components', 'components/', true);
 });
 
 gulp.task('partials:dist', ['partials-app:dist', 'partials-components:dist']);
@@ -165,7 +165,7 @@ var browserSync = require('browser-sync'),
 
 function createNodemon(production, cb) {
   var called = false;
-  return g.nodemon({
+  g.nodemon({
     script: 'server/index.js',
     execMap: {
       'js': 'node --harmony'
@@ -182,13 +182,8 @@ function createNodemon(production, cb) {
 }
 
 gulp.task('nodemon', function(cb) {
-  return createNodemon(false, cb);
+  createNodemon(false, cb);
 });
-
-gulp.task('nodemon:dist', function(cb) {
-  return createNodemon(true, cb);
-});
-
 //run a local server
 gulp.task('browser-sync', ['nodemon'], function() {
   browserSync.init({
@@ -221,12 +216,24 @@ gulp.task('serve', ['clean', 'copy', 'browser-sync', 'index'], function() {
   gulp.watch(config.appFiles.jsunit, ['lint-unit']);
 });
 
-gulp.task('serve:dist', ['clean', 'copy', 'index', 'nodemon:dist']);
-
 /**
  * Copy tasks
  */
-var copyFiles = ['src/404.html', 'src/favicon.ico', 'src/robots.txt'];
+var path = require('path');
+var copyFiles = [
+  'client/src/404.html',
+  'client/src/favicon.ico',
+  'client/src/robots.txt',
+  'client/src/images/logo.png',
+]/*
+.concat(
+  mainBowerFiles()
+  .filter(function(filename) {
+    return path.extname(filename) !== '.js' && path.extname(filename) !== '.css';
+  })
+)*/;
+
+console.log(copyFiles);
 
 gulp.task('copy', function() {
   return gulp.src(copyFiles)
@@ -245,10 +252,20 @@ var header = require('gulp-header'),
   footer = require('gulp-footer');
 
 var moment = require('moment'),
-  fs = require('fs');
+  fs = require('fs'),
+  path = require('path');
+
+gulp.task('build-vendor-js', function() {
+  return gulp.src(mainBowerFiles().filter(function(filename) {
+      return path.extname(filename) === '.js';
+    }))
+    .pipe(g.concat('vendor-built.js'))
+    // .pipe(g.uglify())
+    .pipe(gulp.dest(config.prodDir));
+});
 
 //g.concatenate, g.ngAnnotate, g.uglify, header, footer, source maps
-gulp.task('build:js', ['lint'], function() {
+gulp.task('build-app-js', ['lint'], function() {
   var date = moment();
   return gulp.src(config.appFiles.js)
     .pipe(g.sourcemaps.init())
@@ -266,22 +283,33 @@ gulp.task('build:js', ['lint'], function() {
     .pipe(gulp.dest(config.prodDir));
 });
 
-//can't specify less as a dependency since it would get run before setting production to false
-gulp.task('build:css', ['sass:dist']);
+gulp.task('build:js', ['build-app-js', 'build-vendor-js']);
+
+gulp.task('build-vendor-css', function() {
+  return gulp.src(mainBowerFiles().filter(function(filename) {
+      return path.extname(filename) === '.css';
+    }))
+    .pipe(g.concat('vendor-built.css'))
+    // .pipe(g.uglify())
+    .pipe(gulp.dest(config.prodDir));
+});
+
+gulp.task('build:css', ['sass:dist', 'build-vendor-css']);
 
 gulp.task('index:dist', ['build:js', 'build:css', 'partials:dist'], function() {
   return gulp.src(config.appFiles.html)
     .pipe(g.inject(
       gulp.src(
-        [config.prodDir + '/*.css']
-        .concat(['app-built.js']), {
+        [
+          config.prodDir + '/app-built.css',
+          config.prodDir + '/app-built.js'
+        ], {
           read: false
         }), {
         starttag: '<!-- app:{{ext}} -->',
         addRootSlash: false,
-        ignorePath: [config.prodDir, 'client']
-      }
-    ))
+        ignorePath: [config.prodDir]
+      }))
     .pipe(g.inject(
       gulp.src(
         templateJs
@@ -292,16 +320,20 @@ gulp.task('index:dist', ['build:js', 'build:css', 'partials:dist'], function() {
         }), {
         starttag: '<!-- templates -->',
         addRootSlash: false,
-        ignorePath: [config.devDir, 'client']
+        ignorePath: [config.prodDir]
       }
     ))
     .pipe(g.inject(
-      gulp.src(mainBowerFiles(), {
-        read: false
-      }), {
+      gulp.src(
+        [
+          config.prodDir + '/vendor-built.js',
+          config.prodDir + '/vendor-built.css'
+        ], {
+          read: false
+        }), {
         starttag: '<!-- bower:{{ext}} -->',
         addRootSlash: false,
-        ignorePath: ['client']
+        ignorePath: [config.prodDir]
       }))
     .pipe(gulp.dest(config.prodDir));
 });

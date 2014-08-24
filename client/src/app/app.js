@@ -23,6 +23,6 @@ angular
     'websiteApp.contact',
 
   ])
-  .config(function($urlRouterProvider, $stateProvider){
-  	$urlRouterProvider.otherwise('/');
+  .config(function($urlRouterProvider, $stateProvider) {
+    $urlRouterProvider.otherwise('/');
   });

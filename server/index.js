@@ -1,9 +1,12 @@
 var koa = require('koa'),
-  serve = require('koa-static');
+  serve = require('koa-static'),
+  logger = require('koa-logger');
 
 var fs = require('fs');
 
 var app = koa();
+
+app.use(logger());
 
 if (app.env === 'development') {
   //DEVELOPMENT SERVER
@@ -12,10 +15,10 @@ if (app.env === 'development') {
   app.use(require('koa-browser-sync')());
 } else {
   //PRODUCTION SERVER
-  app.use(serve(require('../build.config.js').devDir));
-  app.use(serve('client'));
+  // app.use(serve(require('../build.config.js').devDir));
+  // app.use(serve('client'));
 
-  // app.use(serve('dist'));
+  app.use(serve('dist'));
 }
 
 // the /sarees route

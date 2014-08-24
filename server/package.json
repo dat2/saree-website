@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "koa": "^0.10.0",
+    "koa-logger": "^1.2.2",
     "koa-static": "^1.4.6",
     "pg-bluebird": "^1.0.5"
   },
