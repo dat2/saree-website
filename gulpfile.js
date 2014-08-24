@@ -157,10 +157,6 @@ gulp.task('index', ['sass', 'partials'], function() {
     .pipe(gulp.dest(config.devDir));
 });
 
-gulp.task('index:dist', function() {
-
-});
-
 /**
  * Server tasks
  */
@@ -266,14 +262,51 @@ gulp.task('build:js', ['lint'], function() {
       }
     }))
     .pipe(footer(fs.readFileSync('module.suffix')))
-    .pipe(g.sourcemaps.write())
+    .pipe(g.sourcemaps.write('.'))
     .pipe(gulp.dest(config.prodDir));
 });
 
 //can't specify less as a dependency since it would get run before setting production to false
 gulp.task('build:css', ['sass:dist']);
 
-gulp.task('build', ['clean', 'build:js', 'build:css', 'partials:dist', 'index:dist', 'copy:dist']);
+gulp.task('index:dist', ['build:js', 'build:css', 'partials:dist'], function() {
+  return gulp.src(config.appFiles.html)
+    .pipe(g.inject(
+      gulp.src(
+        [config.prodDir + '/*.css']
+        .concat(['app-built.js']), {
+          read: false
+        }), {
+        starttag: '<!-- app:{{ext}} -->',
+        addRootSlash: false,
+        ignorePath: [config.prodDir, 'client']
+      }
+    ))
+    .pipe(g.inject(
+      gulp.src(
+        templateJs
+        .map(function(filename) {
+          return filename.replace(config.devDir, config.prodDir);
+        }), {
+          read: false
+        }), {
+        starttag: '<!-- templates -->',
+        addRootSlash: false,
+        ignorePath: [config.devDir, 'client']
+      }
+    ))
+    .pipe(g.inject(
+      gulp.src(mainBowerFiles(), {
+        read: false
+      }), {
+        starttag: '<!-- bower:{{ext}} -->',
+        addRootSlash: false,
+        ignorePath: ['client']
+      }))
+    .pipe(gulp.dest(config.prodDir));
+});
+
+gulp.task('build', ['clean', 'index:dist', 'copy:dist']);
 
 /**
  * Test tasks
@@ -306,5 +339,3 @@ gulp.task('test', ['karma'], function(done) {
   var conf = require('./' + config.devDir + '/karma-unit.js');
   karma.start(conf, done);
 });
-
-gulp.start('nodemon');
