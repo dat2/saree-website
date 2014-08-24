@@ -32,7 +32,10 @@ app.get('/sarees', function(req, res) {
 );
 });
 
-app.listen(process.env.port || 3000);
+var port = process.env.port || 3000;
+app.listen(port, function() {
+  console.log('Listening on port: ' + port);
+});
 
 /*var Pgb = require('pg-bluebird');
 
