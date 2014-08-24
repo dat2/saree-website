@@ -167,17 +167,31 @@ gulp.task('index:dist', function() {
 var browserSync = require('browser-sync'),
   reload = browserSync.reload;
 
-//run a local server
-gulp.task('browser-sync', function() {
-  browserSync({
-    server: {
-      //ORDER MATTERS
-      baseDir: [config.devDir, 'client']
+gulp.task('nodemon', function(cb) {
+  var called = false;
+  return g.nodemon({
+    script: 'server/index.js',
+    execMap: {
+      'js': 'node --harmony'
     },
+    env: {
+      'NODE_ENV': 'development'
+    }
+  }).on('start', function() {
+    if (!called) {
+      called = true;
+      cb();
+    }
+  });
+});
 
-    online: false,
+//run a local server
+gulp.task('browser-sync', ['nodemon'], function() {
+  browserSync.init({
+    proxy: 'localhost:3000',
 
     port: 9000,
+    online: false,
     open: false
   });
 });
@@ -282,3 +296,5 @@ gulp.task('test', ['karma'], function(done) {
   var conf = require('./' + config.devDir + '/karma-unit.js');
   karma.start(conf, done);
 });
+
+gulp.start('nodemon');

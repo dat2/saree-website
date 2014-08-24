@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/dat2/saree-website"
@@ -19,8 +18,11 @@
     "node": ">=0.11.10"
   },
   "dependencies": {
-    "nor-pg": "^0.1.12",
-    "pg-bluebird": "^1.0.5",
-    "forever": "^0.11.1"
+    "koa": "^0.10.0",
+    "koa-static": "^1.4.6",
+    "pg-bluebird": "^1.0.5"
+  },
+  "devDependencies": {
+    "koa-browser-sync": "0.0.1"
   }
 }

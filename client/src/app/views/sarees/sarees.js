@@ -17,7 +17,8 @@ angular.module('websiteApp.sarees', [])
         controller: 'SareesCtrl',
         resolve: {
         	sarees: function($http){
-        		return $http.get('/src/testData/sarees.json').then(function(response){
+        		return $http.get('/sarees')
+              .then(function(response){
         			return response.data;
         		})
         	}
