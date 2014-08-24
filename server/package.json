@@ -1,25 +1,26 @@
 {
-  "name": "server",
+  "name": "saree-website-server",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dat2/website"
+    "url": "https://github.com/dat2/saree-website"
   },
   "author": "Nicholas Dujay and Pirave Eahalaivan",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dat2/website/issues"
+    "url": "https://github.com/dat2/saree-website/issues"
   },
-  "homepage": "https://github.com/dat2/website",
-  "devDependencies": {
-    "forever": "^0.11.1"
-  },
+  "homepage": "https://github.com/dat2/saree-website",
   "engines": {
     "node": ">=0.11.10"
+  },
+  "dependencies": {
+    "nor-pg": "^0.1.12",
+    "pg-bluebird": "^1.0.5",
+    "forever": "^0.11.1"
   }
 }

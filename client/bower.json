@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "saree-website-client",
   "version": "0.0.0",
   "dependencies": {
     "angular": "1.2.16",
@@ -12,5 +12,5 @@
     "angular-mocks": "1.2.16",
     "angular-scenario": "1.2.16"
   },
-  "appPath": "app"
+  "appPath": "src/app"
 }
