@@ -38,7 +38,7 @@ gulp.task('sass:dist', function() {
     }))
     .pipe(g.minifyCss()) //ugh removes the source map
     .pipe(g.concat('app-built.css'))
-    .pipe(gulp.dest(config.prodDir));
+    .pipe(gulp.dest(config.prodDir + '/css'));
 });
 
 /**
@@ -68,7 +68,7 @@ function makePartial(fileGlob, name, prefix, production) {
     }))
     .pipe(g.concat('templates-' + name + '.js'))
     .pipe(g.if(production, annotateAndUglify()))
-    .pipe(g.if(production, gulp.dest(config.prodDir), gulp.dest(config.devDir)));
+    .pipe(g.if(production, gulp.dest(config.prodDir + '/js'), gulp.dest(config.devDir)));
 }
 
 gulp.task('partials-app', function() {
@@ -217,27 +217,44 @@ gulp.task('serve', ['clean', 'copy', 'browser-sync', 'index'], function() {
  * Copy tasks
  */
 var path = require('path');
+var images = 'client/src/images/*';
+
+gulp.task('copy-images', function() {
+  return gulp.src(images)
+    .pipe(gulp.dest(config.devDir + '/images'));
+});
+
+gulp.task('copy-images:dist', function() {
+  return gulp.src(images)
+    .pipe(gulp.dest(config.prodDir + '/images'));
+});
+
+var fonts = mainBowerFiles()
+  .filter(function(filename) {
+    var ext = path.extname(filename);
+
+    var extensions = ['.eot','.svg','.ttf','.woff'];
+    return extensions.indexOf(ext) > -1;
+  });
+
+gulp.task('copy-fonts:dist', function() {
+  return gulp.src(fonts)
+    .pipe(gulp.dest(config.prodDir + '/fonts'));
+});
+
+var path = require('path');
 var copyFiles = [
   'client/src/404.html',
   'client/src/favicon.ico',
   'client/src/robots.txt',
-  'client/src/images/logo.png',
-]/*
-.concat(
-  mainBowerFiles()
-  .filter(function(filename) {
-    return path.extname(filename) !== '.js' && path.extname(filename) !== '.css';
-  })
-)*/;
+];
 
-console.log(copyFiles);
-
-gulp.task('copy', function() {
+gulp.task('copy', ['copy-images'], function() {
   return gulp.src(copyFiles)
     .pipe(gulp.dest(config.devDir));
 });
 
-gulp.task('copy:dist', function() {
+gulp.task('copy:dist', ['copy-images:dist', 'copy-fonts:dist'], function() {
   return gulp.src(copyFiles)
     .pipe(gulp.dest(config.prodDir));
 });
@@ -258,7 +275,7 @@ gulp.task('build-vendor-js', function() {
     }))
     .pipe(g.concat('vendor-built.js'))
     // .pipe(g.uglify())
-    .pipe(gulp.dest(config.prodDir));
+    .pipe(gulp.dest(config.prodDir + '/js'));
 });
 
 //g.concatenate, g.ngAnnotate, g.uglify, header, footer, source maps
@@ -277,7 +294,7 @@ gulp.task('build-app-js', ['lint'], function() {
     }))
     .pipe(footer(fs.readFileSync('module.suffix')))
     .pipe(g.sourcemaps.write('.'))
-    .pipe(gulp.dest(config.prodDir));
+    .pipe(gulp.dest(config.prodDir + '/js'));
 });
 
 gulp.task('build:js', ['build-app-js', 'build-vendor-js']);
@@ -288,7 +305,7 @@ gulp.task('build-vendor-css', function() {
     }))
     .pipe(g.concat('vendor-built.css'))
     // .pipe(g.uglify())
-    .pipe(gulp.dest(config.prodDir));
+    .pipe(gulp.dest(config.prodDir + '/css'));
 });
 
 gulp.task('build:css', ['sass:dist', 'build-vendor-css']);
@@ -298,8 +315,8 @@ gulp.task('index:dist', ['build:js', 'build:css', 'partials:dist'], function() {
     .pipe(g.inject(
       gulp.src(
         [
-          config.prodDir + '/app-built.css',
-          config.prodDir + '/app-built.js'
+          config.prodDir + '/css/app-built.css',
+          config.prodDir + '/js/app-built.js'
         ], {
           read: false
         }), {
@@ -311,7 +328,7 @@ gulp.task('index:dist', ['build:js', 'build:css', 'partials:dist'], function() {
       gulp.src(
         templateJs
         .map(function(filename) {
-          return filename.replace(config.devDir, config.prodDir);
+          return filename.replace(config.devDir, config.prodDir + '/js/');
         }), {
           read: false
         }), {
@@ -323,8 +340,8 @@ gulp.task('index:dist', ['build:js', 'build:css', 'partials:dist'], function() {
     .pipe(g.inject(
       gulp.src(
         [
-          config.prodDir + '/vendor-built.js',
-          config.prodDir + '/vendor-built.css'
+          config.prodDir + '/js/vendor-built.js',
+          config.prodDir + '/css/vendor-built.css'
         ], {
           read: false
         }), {
