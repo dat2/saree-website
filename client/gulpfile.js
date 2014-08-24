@@ -2,7 +2,9 @@
  * Common gulp imports
  */
 var gulp = require('gulp'),
-  g = require('gulp-load-plugins')();
+  g = require('gulp-load-plugins')({
+    lazy: false
+  });
 
 /**
  * npm modules
@@ -12,9 +14,7 @@ var lazypipe = require('lazypipe');
 /**
  * Common variables
  */
-var config = require('./build.config.js'),
-  production = false,
-  compileDirectory = g.if(production, gulp.dest(config.prodDir), gulp.dest(config.devDir));
+var config = require('./build.config.js');
 
 /**
  * CSS preprocessing (Sass)
@@ -22,10 +22,11 @@ var config = require('./build.config.js'),
 
 gulp.task('sass', function() {
   return gulp.src(config.appFiles.sass)
-    //g. .pipe(sourcemaps.init())
+    //.pipe(g.sourcemaps.init())
     .pipe(g.sass({
       sourceComments: 'map'
     }))
+    .pipe(g.flatten())
     // .pipe(g.sourcemaps.write('.'))
     .pipe(gulp.dest(config.devDir));
 });
@@ -35,7 +36,8 @@ gulp.task('sass:dist', function() {
     .pipe(g.sass({
       sourceComments: 'map'
     }))
-    .pipe(g.minifyCSS())
+    .pipe(g.minifyCss())
+    .pipe(g.concat('app-built.css'))
     .pipe(gulp.dest(config.prodDir));
 });
 
@@ -51,58 +53,43 @@ gulp.task('clean', function(done) {
 /**
  * Partial tasks
  */
-var ngHtml2Js = require('gulp-ng-html2js'),
-  htmlmin = require('gulp-htmlmin');
-
 var annotateAndUglify = lazypipe()
   .pipe(g.ngAnnotate)
   .pipe(g.uglify);
 
-/**
- * Partial pipe factory
- * This will
- * a. minify your templates (passed in from gulp.src)
- * b. convert them to angular modules using html2js
- * c. g.concatenate
- * d. g.ngAnnotate
- * e. g.uglify
- * @return stream
- */
-function makePartialPipe(name) {
-  return lazypipe()
-    .pipe(function() {
-      return g.if(production, htmlmin({
-        collapseWhitespace: true
-      }));
-    })
-    .pipe(ngHtml2Js, {
-      moduleName: 'templates-' + name
-    })
-    .pipe(g.concat, 'templates-' + name + '.js')
-    .pipe(function() {
-      return g.if(production, annotateAndg.Uglify());
-    })();
-
-  //this is immediately called for api reasons
-  //otherwise, the user would have to type makePartialPipe(<name>)()
-  //since lazy pipe returns a stream factory function
-}
-
-function makePartial(fileGlob, partialName) {
+function makePartial(fileGlob, name, prefix, production) {
   return gulp.src(fileGlob)
-    .pipe(makePartialPipe(partialName))
-    .pipe(compileDirectory());
+    .pipe(g.if(production, g.htmlmin({
+      collapseWhitespace: true
+    })))
+    .pipe(g.ngHtml2js({
+      moduleName: 'templates-' + name,
+      prefix: prefix
+    }))
+    .pipe(g.concat('templates-' + name + '.js'))
+    .pipe(g.if(production, annotateAndUglify()))
+    .pipe(g.if(production, gulp.dest(config.prodDir), gulp.dest(config.devDir)));
 }
 
 gulp.task('partials-app', function() {
-  makePartial(config.appFiles.atpl, 'app');
+  makePartial(config.appFiles.atpl, 'app', 'views/');
 });
 
 gulp.task('partials-components', function() {
-  makePartial(config.appFiles.ctpl, 'components');
+  makePartial(config.appFiles.ctpl, 'components', 'components/');
 });
 
 gulp.task('partials', ['partials-app', 'partials-components']);
+
+gulp.task('partials-app:dist', function() {
+  makePartial(config.appFiles.atpl, 'app', 'views', true);
+});
+
+gulp.task('partials-components:dist', function() {
+  makePartial(config.appFiles.atpl, 'components', 'components/', true);
+});
+
+gulp.task('partials:dist', ['partials-app:dist', 'partials-components:dist']);
 
 /**
  * Lint tasks
@@ -113,8 +100,7 @@ var stylish = require('jshint-stylish');
 
 var lint = lazypipe()
   .pipe(jshint)
-  .pipe(jshint.reporter, stylish)
-  .pipe(jshint.reporter, 'fail');
+  .pipe(jshint.reporter, stylish);
 
 gulp.task('lint', function() {
   return gulp.src(config.appFiles.js)
@@ -129,54 +115,69 @@ gulp.task('lint-unit', function() {
 /**
  * Template processing
  */
-var inject = require('gulp-inject'),
-template = require('gulp-template'),
-rename = require('gulp-rename');
+var mainBowerFiles = require('main-bower-files');
 
-var globArray = require('glob-array'),
-  pkg = require('./package.json');
+var pkg = require('./package.json');
 
-var templateJs = ['templates-app.js', 'templates-components.js'];
+var templateJs = ['templates-app.js', 'templates-components.js']
+  .map(function(filename) {
+    return config.devDir + '/' + filename;
+  });
 
-gulp.task('index', function() {
-  var vendorJs = production ? ['vendor-built.js'] : config.vendorFiles.js;
-
-  var appJs = production ? ['app-built.js'] : globArray.sync(config.appFiles.js);
-
+gulp.task('index', ['sass', 'partials'], function() {
   return gulp.src(config.appFiles.html)
-    .pipe(template({
-      vendorJs: vendorJs,
-      appJs: appJs,
-      templateJs: templateJs,
-
-      version: pkg.version
-    }))
-    .pipe(inject(
+    .pipe(g.inject(
       gulp.src(
-        [config.devDir + './*.css']
-        .g.concat(config.appFiles.js)
-      ), {
-        starttag: '<!-- inject:app:{{ext}} -->',
-        addRootSlash: false
+        [config.devDir + '/*.css']
+        .concat(config.appFiles.js), {
+          read: false
+        }), {
+        starttag: '<!-- app:{{ext}} -->',
+        addRootSlash: false,
+        ignorePath: config.devDir
       }
     ))
+    .pipe(g.inject(
+      gulp.src(templateJs, {
+        read: false
+      }), {
+        starttag: '<!-- templates -->',
+        addRootSlash: false,
+        ignorePath: config.devDir
+      }
+    ))
+    .pipe(g.inject(
+      gulp.src(mainBowerFiles(), {
+        read: false
+      }), {
+        starttag: '<!-- bower:{{ext}} -->',
+        addRootSlash: false
+      }))
     .pipe(gulp.dest(config.devDir));
 });
 
-gulp.task('process-karma', function() {
-  var appJs = config.vendorFiles.js
-    .g.concat(
-      templateJs.map(function(filename) {
-        return config.devDir + '/' + filename;
-      })
-    )
-    .g.concat(config.testFiles.js);
+gulp.task('index:dist', function() {
+
+});
+
+gulp.task('karma', function() {
+  var js = mainBowerFiles()
+    .concat(templateJs)
+    .concat(config.testFiles.js);
 
   return gulp.src('karma/karma-unit.tpl.js')
-    .pipe(template({
-      scripts: appJs
-    }))
-    .pipe(rename('karma-unit.js'))
+    .pipe(g.inject(
+      gulp.src(js, {
+        read: false
+      }), {
+        addRootSlash: false,
+        starttag: '// inject:{{ext}}',
+        endtag: '// endinject',
+        transform: function(filepath) {
+          return '\'' + filepath + '\',';
+        }
+      }))
+    .pipe(g.rename('karma-unit.js'))
     .pipe(gulp.dest(config.devDir));
 });
 
@@ -201,12 +202,16 @@ gulp.task('browser-sync', function() {
   });
 });
 
-gulp.task('serve', ['clean', 'copy-assets', 'sass', 'browser-sync', 'partials', 'process-index'], function() {
+// Note: this does not catch new files, I currently can't figure out how to watch new files
+// very nicely.
+gulp.task('serve', ['clean', 'copy', 'browser-sync', 'index'], function() {
   //watch sass files
   gulp.watch('src/**/*.scss', ['sass', reload]);
 
   //watch index.html and re-process it
-  gulp.watch(config.appFiles.html, ['process-index', reload]);
+  //since index depends on sass and partials, this will
+  //recompile a lot
+  gulp.watch(config.appFiles.html, ['index', reload]);
 
   //watch templates
   gulp.watch([config.appFiles.atpl, config.appFiles.ctpl], ['partials', reload]);
@@ -218,9 +223,19 @@ gulp.task('serve', ['clean', 'copy-assets', 'sass', 'browser-sync', 'partials', 
   gulp.watch(config.appFiles.jsunit, ['lint-unit']);
 });
 
-gulp.task('copy-assets', function() {
-  return gulp.src(['src/404.html', 'src/favicon.ico', 'src/robots.txt'])
-    .pipe(compileDirectory());
+/**
+ * Copy tasks
+ */
+var copyFiles = ['src/404.html', 'src/favicon.ico', 'src/robots.txt'];
+
+gulp.task('copy', function() {
+  return gulp.src(copyFiles)
+    .pipe(gulp.dest(config.devDir));
+});
+
+gulp.task('copy:dist', function() {
+  return gulp.src(copyFiles)
+    .pipe(gulp.dest(config.prodDir));
 });
 
 /**
@@ -233,7 +248,7 @@ var moment = require('moment'),
   fs = require('fs');
 
 //g.concatenate, g.ngAnnotate, g.uglify, header, footer, source maps
-gulp.task('build-app-js', ['lint'], function() {
+gulp.task('build:js', ['lint'], function() {
   var date = moment();
   return gulp.src(config.appFiles.js)
     .pipe(g.sourcemaps.init())
@@ -251,38 +266,17 @@ gulp.task('build-app-js', ['lint'], function() {
     .pipe(gulp.dest(config.prodDir));
 });
 
-//g.concatenate, g.uglify
-gulp.task('build-vendor-js', function() {
-  return gulp.src(config.vendorFiles.js)
-    .pipe(g.concat('vendor-built.js'))
-    .pipe(g.uglify())
-    .pipe(gulp.dest(config.prodDir));
-});
-
-gulp.task('build-js', ['build-app-js', 'build-vendor-js']);
-
 //can't specify less as a dependency since it would get run before setting production to false
-gulp.task('build-css', function(done) {
-  production = true;
+gulp.task('build:css', ['sass:dist']);
 
-  gulp.start('sass');
-
-  done();
-});
-
-gulp.task('build', ['clean'], function() {
-  gulp.start('build-js');
-  gulp.start('build-css');
-  gulp.start('partials');
-  gulp.start('process-index');
-});
+gulp.task('build', ['clean', 'build:js', 'build:css', 'partials:dist', 'index', 'copy:dist']);
 
 /**
  * Test tasks
  */
 var karma = require('karma').server;
 
-gulp.task('test', ['process-karma'], function(done) {
+gulp.task('test', ['karma'], function(done) {
   var conf = require('./' + config.devDir + '/karma-unit.js');
   karma.start(conf, done);
 });
