@@ -167,7 +167,7 @@ gulp.task('index:dist', function() {
 var browserSync = require('browser-sync'),
   reload = browserSync.reload;
 
-gulp.task('nodemon', function(cb) {
+function createNodemon(production, cb) {
   var called = false;
   return g.nodemon({
     script: 'server/index.js',
@@ -175,7 +175,7 @@ gulp.task('nodemon', function(cb) {
       'js': 'node --harmony'
     },
     env: {
-      'NODE_ENV': 'development'
+      'NODE_ENV': production ? 'production' : 'development'
     }
   }).on('start', function() {
     if (!called) {
@@ -183,6 +183,14 @@ gulp.task('nodemon', function(cb) {
       cb();
     }
   });
+}
+
+gulp.task('nodemon', function(cb) {
+  return createNodemon(false, cb);
+});
+
+gulp.task('nodemon:dist', function(cb) {
+  return createNodemon(true, cb);
 });
 
 //run a local server
@@ -216,6 +224,8 @@ gulp.task('serve', ['clean', 'copy', 'browser-sync', 'index'], function() {
   //watch specs, and lint them
   gulp.watch(config.appFiles.jsunit, ['lint-unit']);
 });
+
+gulp.task('serve:dist', ['clean', 'copy', 'index', 'nodemon:dist']);
 
 /**
  * Copy tasks

@@ -12,7 +12,10 @@ if (app.env === 'development') {
   app.use(require('koa-browser-sync')());
 } else {
   //PRODUCTION SERVER
-  app.use(serve('dist'));
+  app.use(serve(require('../build.config.js').devDir));
+  app.use(serve('client'));
+
+  // app.use(serve('dist'));
 }
 
 // the /sarees route
